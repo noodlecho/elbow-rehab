@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Elbow Rehab" />
+  <meta name="theme-color" content="#111514" />
+  <link id="apple-touch-icon-link" rel="apple-touch-icon" sizes="180x180" href="" />
+  <title>Taekwondo Elbow Rehab</title>
+  <script>
+    // Generate a crisp 180x180 dark-sage PNG icon for iPhone Home Screen
+    (function generateTouchIcon() {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 180;
+        c.height = 180;
+        const ctx = c.getContext('2d');
+        if (!ctx) return;
+        ctx.fillStyle = '#111514';
+        ctx.fillRect(0, 0, 180, 180);
+        ctx.fillStyle = '#191F1E';
+        ctx.beginPath();
+        ctx.roundRect(14, 14, 152, 152, 34);
+        ctx.fill();
+        ctx.strokeStyle = '#2E3835';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        // Stylized bent arm & pulse arc mark
+        ctx.strokeStyle = '#6DA694';
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(56, 52);
+        ctx.lineTo(56, 116);
+        ctx.lineTo(126, 98);
+        ctx.stroke();
+        ctx.strokeStyle = '#D99B6C';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(88, 84, 34, -0.8, 0.45);
+        ctx.stroke();
+        const link = document.getElementById('apple-touch-icon-link');
+        if (link) link.href = c.toDataURL('image/png');
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #111514;
+      color: #E6ECE9;
+      overflow-x: hidden;
+    }
+    .safe-top {
+      padding-top: max(0.875rem, env(safe-area-inset-top));
+    }
+    .safe-bottom {
+      padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+    }
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.15s linear, stroke 0.25s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .view-animate {
+      animation: fadeSlideIn 0.22s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#111514] text-[#E6ECE9] flex flex-col selection:bg-[#6DA694]/30">
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: SESSION OVERVIEW SCREEN                                       -->
+  <!-- ===================================================================== -->
+  <div id="view-overview" class="flex-1 flex flex-col view-animate">
+    <!-- Sticky Top Header -->
+    <header class="sticky top-0 z-30 bg-[#111514]/95 backdrop-blur-md border-b border-[#2E3835] safe-top">
+      <div class="max-w-[480px] mx-auto px-4 pb-3.5 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-[#E6ECE9] truncate">
+            Taekwondo Elbow Rehab
+          </h1>
+          <div class="mt-1 flex items-center gap-2 flex-wrap">
+            <span id="overview-summary-badge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#6DA694]/15 text-[#6DA694] border border-[#6DA694]/30">
+              7 Exercises &bull; Custom Rhythm
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Sound Chimes Toggle -->
+          <button id="btn-sound-overview" type="button" class="p-2.5 rounded-xl bg-[#191F1E] hover:bg-[#222A28] border border-[#2E3835] text-[#6DA694] transition active:scale-95" aria-label="Toggle Sound Chimes" title="Toggle Sound Chimes">
+            <svg class="w-5 h-5 sound-icon-on" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
+            </svg>
+            <svg class="w-5 h-5 sound-icon-off hidden text-[#9BA8A3]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
+            </svg>
+          </button>
+
+          <!-- Reset Defaults Button -->
+          <button id="btn-reset-defaults" type="button" class="px-3 py-2.5 rounded-xl bg-[#191F1E] hover:bg-[#222A28] border border-[#2E3835] text-xs font-semibold text-[#9BA8A3] hover:text-[#E6ECE9] transition active:scale-95">
+            Reset Defaults
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Exercise Cards List -->
+    <main class="flex-1 max-w-[480px] w-full mx-auto px-4 pt-4 pb-28 space-y-3">
+      <!-- Subtle Guidance Strip -->
+      <div class="rounded-2xl bg-[#191F1E] border border-[#2E3835] px-4 py-3 flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-[#6DA694]/15 text-[#6DA694] flex items-center justify-center shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+          </svg>
+        </div>
+        <p class="text-xs sm:text-sm text-[#9BA8A3] leading-snug">
+          Remove any elbow brace during exercises and keep movements comfortable. Tap <span class="font-semibold text-[#E6ECE9]">Adjust</span> on any card to customize your rhythm.
+        </p>
+      </div>
+
+      <!-- Vertical List of 7 Exercise Cards -->
+      <div id="overview-card-list" class="space-y-3">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </main>
+
+    <!-- Sticky Bottom Start Routine Bar -->
+    <div class="fixed bottom-0 left-0 right-0 z-30 bg-[#111514]/95 backdrop-blur-md border-t border-[#2E3835] px-4 pt-3 safe-bottom">
+      <div class="max-w-[480px] mx-auto">
+        <button id="btn-start-routine" type="button" class="w-full py-4 px-6 rounded-2xl bg-[#6DA694] hover:opacity-95 text-[#0E1412] font-extrabold text-base tracking-tight shadow-lg shadow-black/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+          <span>Start Routine</span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: SINGLE-EXERCISE FOCUS PAGE ("Exercise X of 7")                -->
+  <!-- ===================================================================== -->
+  <div id="view-exercise" class="hidden flex-1 flex-col view-animate">
+    <!-- Top Bar: Overview Back, Exercise X of 7, Progress Bar, Sound Toggle -->
+    <header class="sticky top-0 z-30 bg-[#111514]/95 backdrop-blur-md border-b border-[#2E3835] safe-top">
+      <div class="max-w-[480px] mx-auto px-4 pb-2.5 space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <button id="btn-back-overview" type="button" class="px-3 py-2 rounded-xl bg-[#191F1E] hover:bg-[#222A28] border border-[#2E3835] text-xs sm:text-sm font-semibold text-[#E6ECE9] flex items-center gap-1.5 transition active:scale-95">
+            <span aria-hidden="true">&larr;</span>
+            <span>Overview</span>
+          </button>
+
+          <span id="focus-counter" class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#6DA694]">
+            Exercise 1 of 7
+          </span>
+
+          <button id="btn-sound-focus" type="button" class="p-2 rounded-xl bg-[#191F1E] hover:bg-[#222A28] border border-[#2E3835] text-[#6DA694] transition active:scale-95" aria-label="Toggle Sound Chimes" title="Toggle Sound Chimes">
+            <svg class="w-5 h-5 sound-icon-on" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
+            </svg>
+            <svg class="w-5 h-5 sound-icon-off hidden text-[#9BA8A3]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Clean Step Progress Bar -->
+        <div class="w-full h-2 bg-[#222A28] rounded-full overflow-hidden">
+          <div id="focus-progress-bar" class="h-full bg-[#6DA694] rounded-full transition-all duration-300" style="width: 14.28%"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Single Exercise Focus Content -->
+    <main class="flex-1 max-w-[480px] w-full mx-auto px-4 pt-4 pb-28 space-y-4">
+
+      <!-- Large Illustration Card -->
+      <div class="bg-[#191F1E] border border-[#2E3835] rounded-3xl p-3 sm:p-4">
+        <div id="focus-svg-container" class="w-full h-44 sm:h-52 rounded-2xl bg-[#141A19] border border-[#2E3835]/70 flex items-center justify-center overflow-hidden p-2">
+          <!-- Custom SVG injected here -->
+        </div>
+      </div>
+
+      <!-- Exercise Title, Form Cues & Quick Inline Adjuster Card -->
+      <div class="bg-[#191F1E] border border-[#2E3835] rounded-3xl p-4 sm:p-5 space-y-3.5">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <span id="focus-category-pill" class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#6DA694]/15 text-[#6DA694]">
+              Isometric Hold
+            </span>
+            <h2 id="focus-title" class="text-lg sm:text-xl font-extrabold text-[#E6ECE9] mt-1 leading-snug">
+              3-Angle Isometric Push
+            </h2>
+          </div>
+        </div>
+
+        <!-- 2 Concise Form Cues -->
+        <ul id="focus-cues-list" class="space-y-1.5 text-xs sm:text-sm text-[#9BA8A3] leading-relaxed">
+          <!-- Populated dynamically -->
+        </ul>
+
+        <!-- Quick Inline Time/Rep - + Adjuster -->
+        <div id="focus-inline-adjusters" class="pt-2.5 border-t border-[#2E3835] grid grid-cols-2 gap-2.5">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Interactive Timer / Rep Pacer Card -->
+      <div class="bg-[#191F1E] border border-[#2E3835] rounded-3xl p-5 space-y-4">
+
+        <!-- 3-Angle Visual Indicator (Shown only for Exercise 1) -->
+        <div id="angle-pills-bar" class="hidden grid grid-cols-3 gap-1.5 bg-[#222A28] p-1.5 rounded-2xl border border-[#2E3835]">
+          <div id="angle-pill-0" class="py-1.5 px-2 rounded-xl text-center text-[11px] font-bold transition bg-[#6DA694] text-[#0E1412]">
+            1. Close
+          </div>
+          <div id="angle-pill-1" class="py-1.5 px-2 rounded-xl text-center text-[11px] font-bold transition text-[#9BA8A3]">
+            2. Mid
+          </div>
+          <div id="angle-pill-2" class="py-1.5 px-2 rounded-xl text-center text-[11px] font-bold transition text-[#9BA8A3]">
+            3. Extended
+          </div>
+        </div>
+
+        <!-- Mode Switcher for Rep-Based Exercises -->
+        <div id="rep-pacer-mode-bar" class="hidden grid grid-cols-2 gap-1.5 bg-[#222A28] p-1.5 rounded-2xl border border-[#2E3835]">
+          <button id="btn-mode-manual" type="button" class="py-2 px-3 rounded-xl text-xs font-bold transition bg-[#6DA694] text-[#0E1412]">
+            My Own Rhythm (Manual)
+          </button>
+          <button id="btn-mode-auto" type="button" class="py-2 px-3 rounded-xl text-xs font-bold transition text-[#9BA8A3] hover:text-[#E6ECE9]">
+            Auto Rep-Pacer
+          </button>
+        </div>
+
+        <!-- Set / Round Badge Header -->
+        <div class="flex items-center justify-between">
+          <span id="pacer-set-indicator" class="px-3 py-1 rounded-full text-xs font-bold bg-[#6DA694]/15 text-[#6DA694]">
+            Round 1 of 2
+          </span>
+          <span id="pacer-status-badge" class="text-xs font-semibold text-[#9BA8A3]">
+            Ready when you are
+          </span>
+        </div>
+
+        <!-- Central Countdown Ring / Counter Display -->
+        <div class="flex flex-col items-center justify-center py-1">
+          <div class="relative w-52 h-52 sm:w-56 sm:h-56 flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 220 220">
+              <!-- Track -->
+              <circle cx="110" cy="110" r="94" fill="none" stroke="#222A28" stroke-width="12" />
+              <!-- Progress -->
+              <circle id="focus-ring-circle" class="progress-ring-circle" cx="110" cy="110" r="94" fill="none" stroke="#6DA694" stroke-width="12" stroke-linecap="round" stroke-dasharray="590.62" stroke-dashoffset="0" />
+            </svg>
+
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-5">
+              <span id="ring-top-label" class="text-[11px] font-extrabold uppercase tracking-wider text-[#6DA694] mb-1">
+                ANGLE 1: CLOSE TO BODY
+              </span>
+              <div id="ring-center-value" class="text-4xl sm:text-5xl font-extrabold tracking-tight text-[#E6ECE9] tabular-nums">
+                15s
+              </div>
+              <span id="ring-bottom-label" class="text-xs font-medium text-[#9BA8A3] mt-1">
+                Tap Start Hold to begin
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Controls Area -->
+        <div id="pacer-controls-area" class="space-y-2.5">
+          <!-- State A: Initial Start Hold / Begin Button -->
+          <div id="ctrl-ready">
+            <button id="btn-begin-exercise" type="button" class="w-full py-4 px-6 rounded-2xl bg-[#6DA694] hover:opacity-95 text-[#0E1412] font-extrabold text-base flex items-center justify-center gap-2 transition active:scale-[0.99]">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span id="label-begin-btn">Start Hold</span>
+            </button>
+          </div>
+
+          <!-- State B: Active Timed or Auto-Paced Controls -->
+          <div id="ctrl-running" class="hidden grid grid-cols-3 gap-2">
+            <button id="btn-reset-timer" type="button" class="py-3 px-3 rounded-2xl bg-[#222A28] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-semibold text-xs sm:text-sm transition active:scale-95">
+              Reset
+            </button>
+            <button id="btn-pause-resume" type="button" class="py-3 px-4 rounded-2xl bg-[#6DA694] hover:opacity-95 text-[#0E1412] font-extrabold text-xs sm:text-sm transition active:scale-95">
+              Pause
+            </button>
+            <button id="btn-skip-step" type="button" class="py-3 px-3 rounded-2xl bg-[#222A28] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-semibold text-xs sm:text-sm transition active:scale-95">
+              Skip Step
+            </button>
+          </div>
+
+          <!-- State C: Manual "My Own Rhythm" Rep Controls -->
+          <div id="ctrl-manual" class="hidden space-y-2">
+            <button id="btn-tap-rep" type="button" class="w-full py-4 px-6 rounded-2xl bg-[#6DA694] hover:opacity-95 text-[#0E1412] font-extrabold text-base flex items-center justify-center gap-2 transition active:scale-[0.98]">
+              <span>+1 Rep Done</span>
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-manual-reset" type="button" class="py-2.5 px-3 rounded-xl bg-[#222A28] hover:bg-[#2E3835] border border-[#2E3835] text-xs font-semibold text-[#9BA8A3] transition active:scale-95">
+                Reset Set
+              </button>
+              <button id="btn-manual-complete-set" type="button" class="py-2.5 px-3 rounded-xl bg-[#6DA694]/15 hover:bg-[#6DA694]/25 border border-[#6DA694]/30 text-xs font-bold text-[#6DA694] transition active:scale-95">
+                Finish Set &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- State D: Rest Between Sets Controls -->
+          <div id="ctrl-rest" class="hidden grid grid-cols-2 gap-2.5">
+            <button id="btn-rest-pause" type="button" class="py-3.5 px-4 rounded-2xl bg-[#222A28] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-semibold text-sm transition active:scale-95">
+              Pause Rest
+            </button>
+            <button id="btn-skip-rest" type="button" class="py-3.5 px-4 rounded-2xl bg-[#D99B6C] hover:opacity-95 text-[#0E1412] font-extrabold text-sm transition active:scale-95">
+              Skip Rest &rarr;
+            </button>
+          </div>
+
+          <!-- State E: Exercise Completed Banner -->
+          <div id="ctrl-done" class="hidden space-y-2.5">
+            <div class="rounded-2xl bg-[#6DA694]/15 border border-[#6DA694]/30 p-3 text-center text-xs sm:text-sm font-semibold text-[#6DA694]">
+              All sets complete for this exercise. Tap Next Exercise below when ready.
+            </div>
+            <button id="btn-repeat-exercise" type="button" class="w-full py-2.5 px-4 rounded-xl bg-[#222A28] hover:bg-[#2E3835] border border-[#2E3835] text-xs font-semibold text-[#9BA8A3] transition active:scale-95">
+              Repeat This Exercise
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticky Bottom Page-by-Page Navigation Controls -->
+    <div class="fixed bottom-0 left-0 right-0 z-30 bg-[#111514]/95 backdrop-blur-md border-t border-[#2E3835] px-4 pt-3 safe-bottom">
+      <div class="max-w-[480px] mx-auto grid grid-cols-2 gap-3">
+        <button id="btn-prev-page" type="button" class="py-3.5 px-4 rounded-2xl bg-[#191F1E] hover:bg-[#222A28] disabled:opacity-40 disabled:pointer-events-none border border-[#2E3835] text-[#E6ECE9] font-bold text-sm sm:text-base flex items-center justify-center gap-1.5 transition active:scale-[0.99]">
+          <span aria-hidden="true">&larr;</span>
+          <span>Previous</span>
+        </button>
+
+        <button id="btn-next-page" type="button" class="py-3.5 px-4 rounded-2xl bg-[#6DA694] hover:opacity-95 text-[#0E1412] font-extrabold text-sm sm:text-base flex items-center justify-center gap-1.5 transition active:scale-[0.99]">
+          <span id="label-next-page">Next Exercise</span>
+          <span id="arrow-next-page" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 3: CALM COMPLETION SCREEN                                        -->
+  <!-- ===================================================================== -->
+  <div id="view-complete" class="hidden flex-1 flex-col justify-center view-animate">
+    <main class="max-w-[480px] w-full mx-auto px-4 py-10">
+      <div class="bg-[#191F1E] border border-[#2E3835] rounded-3xl p-6 sm:p-8 text-center space-y-5">
+        <div class="w-16 h-16 rounded-2xl bg-[#6DA694]/15 border border-[#6DA694]/30 text-[#6DA694] flex items-center justify-center mx-auto">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-2xl font-extrabold tracking-tight text-[#E6ECE9]">
+            Routine Complete
+          </h2>
+          <p class="text-sm sm:text-base text-[#9BA8A3] leading-relaxed max-w-md mx-auto">
+            Nice work completing your rehab routine. Keep any elbow brace or strap off while resting so circulation stays unrestricted and your arm can recover smoothly.
+          </p>
+        </div>
+
+        <div class="pt-2 space-y-2.5 max-w-sm mx-auto">
+          <button id="btn-complete-overview" type="button" class="w-full py-3.5 px-5 rounded-2xl bg-[#6DA694] hover:opacity-95 text-[#0E1412] font-extrabold text-sm sm:text-base transition active:scale-[0.99]">
+            Back to Overview
+          </button>
+          <button id="btn-complete-restart" type="button" class="w-full py-3.5 px-5 rounded-2xl bg-[#222A28] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-sm sm:text-base transition active:scale-[0.99]">
+            Restart Routine
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. UNIFIED STICK-FIGURE VECTOR SVG ILLUSTRATIONS (ALL 7 EXERCISES)
+    //    Palette: #D8E2DE stick figure | #6D7D77 furniture/floor
+    //             #6DA694 injured arm   | #D99B6C arrows & props
+    // =========================================================================
+    const EXERCISE_SVGS = {
+      // 1. 3-Angle Isometric Push (Standing stick figure, 3 marked angles)
+      'iso-push-3-angle': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="3-Angle Isometric Push stick figure diagram">
+          <!-- Floor Line -->
+          <line x1="28" y1="164" x2="252" y2="164" stroke="#6D7D77" stroke-width="2" stroke-linecap="round" />
+
+          <!-- Standing Stick Figure Body (#D8E2DE) -->
+          <circle cx="56" cy="36" r="12" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+          <line x1="56" y1="48" x2="56" y2="108" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <line x1="56" y1="108" x2="44" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <line x1="56" y1="108" x2="70" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+
+          <!-- 3-Angle Progression Arc (#D99B6C) -->
+          <path d="M108 54 Q176 58 232 88" stroke="#D99B6C" stroke-width="1.8" stroke-dasharray="4 4" stroke-linecap="round" />
+          <circle cx="108" cy="54" r="3" fill="#D99B6C" />
+          <circle cx="164" cy="64" r="3.5" fill="#D99B6C" />
+          <circle cx="232" cy="88" r="3" fill="#D99B6C" />
+
+          <!-- Angle 1 (Ghosted Close): Injured Arm (#6DA694) -->
+          <polyline points="56,64 74,104 106,64" stroke="#6DA694" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.38" />
+
+          <!-- Angle 3 (Ghosted Near-Extended): Injured Arm (#6DA694) -->
+          <polyline points="56,64 148,78 226,88" stroke="#6DA694" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" />
+
+          <!-- Angle 2 (Active Mid-Range): Injured Arm (#6DA694) -->
+          <polyline points="56,64 96,106 158,88" stroke="#6DA694" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+          <line x1="158" y1="88" x2="164" y2="68" stroke="#6DA694" stroke-width="5.5" stroke-linecap="round" />
+
+          <!-- Opposite Supporting Arm & Hand Pressing Back of Hand (#D8E2DE) -->
+          <polyline points="56,66 112,120 173,88" stroke="#D8E2DE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
+          <line x1="173" y1="88" x2="173" y2="68" stroke="#D8E2DE" stroke-width="5" stroke-linecap="round" />
+
+          <!-- Opposing Isometric Push Arrows (#D99B6C) -->
+          <line x1="126" y1="76" x2="150" y2="76" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" />
+          <polyline points="145,71 151,76 145,81" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+
+          <line x1="206" y1="76" x2="182" y2="76" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" />
+          <polyline points="187,71 181,76 187,81" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Angle Markers -->
+          <text x="108" y="45" font-size="9" font-weight="700" fill="#9BA8A3" text-anchor="middle">1</text>
+          <text x="164" y="54" font-size="10" font-weight="800" fill="#6DA694" text-anchor="middle">2</text>
+          <text x="232" y="79" font-size="9" font-weight="700" fill="#9BA8A3" text-anchor="middle">3</text>
+        </svg>
+      `,
+
+      // 2. Weighted Wrist Extension (Seated stick figure in chair at table)
+      'wrist-ext-eccentric': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Seated stick figure performing Weighted Wrist Extension with 3s slow lower">
+          <!-- Floor Line (#6D7D77) -->
+          <line x1="20" y1="164" x2="260" y2="164" stroke="#6D7D77" stroke-width="2" stroke-linecap="round" />
+
+          <!-- Chair (#6D7D77) -->
+          <polyline points="40,78 40,120 76,120" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <line x1="44" y1="120" x2="44" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+          <line x1="72" y1="120" x2="72" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+
+          <!-- Table (#6D7D77) -->
+          <line x1="94" y1="96" x2="180" y2="96" stroke="#6D7D77" stroke-width="3.5" stroke-linecap="round" />
+          <line x1="112" y1="96" x2="112" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+          <line x1="164" y1="96" x2="164" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+
+          <!-- Seated Stick Figure Body (#D8E2DE) -->
+          <circle cx="56" cy="40" r="11" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+          <line x1="56" y1="51" x2="56" y2="113" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <!-- Legs bent 90 deg at knee -->
+          <polyline points="56,113 96,113 96,162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Non-injured resting arm -->
+          <polyline points="56,66 68,94 84,110" stroke="#D8E2DE" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+
+          <!-- Injured Arm Resting Flat Along Tabletop (#6DA694) -->
+          <polyline points="56,64 102,90 180,90" stroke="#6DA694" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Ghosted Top Extended Wrist Position -->
+          <line x1="180" y1="90" x2="206" y2="74" stroke="#6DA694" stroke-width="5" stroke-linecap="round" opacity="0.4" />
+          <rect x="204" y="65" width="16" height="10" rx="3" transform="rotate(-28 204 65)" fill="#D99B6C" opacity="0.45" />
+
+          <!-- Active Lowering Wrist Position Past Table Edge (#6DA694) -->
+          <line x1="180" y1="90" x2="208" y2="110" stroke="#6DA694" stroke-width="5.5" stroke-linecap="round" />
+          <!-- Small Water Bottle / Weight (#D99B6C) -->
+          <rect x="205" y="103" width="20" height="11" rx="4" transform="rotate(28 205 103)" fill="#D99B6C" />
+
+          <!-- Short Upward Lift Arrow -->
+          <line x1="236" y1="96" x2="236" y2="70" stroke="#D8E2DE" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" />
+          <polyline points="232,75 236,69 240,75" stroke="#D8E2DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Curved 3s Slow-Lower Arrow (#D99B6C) -->
+          <path d="M246 68 Q258 92 244 118" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" />
+          <polyline points="241,112 243,119 250,116" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+          <rect x="238" y="83" width="24" height="16" rx="5" fill="#191F1E" stroke="#D99B6C" stroke-width="1.5" />
+          <text x="250" y="94" font-size="9.5" font-weight="800" fill="#D99B6C" text-anchor="middle">3s</text>
+        </svg>
+      `,
+
+      // 3. Table-Supported Pronation & Supination (Seated stick figure in chair at table)
+      'table-pronation-supination': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Seated stick figure performing Table-Supported Pronation and Supination">
+          <!-- Floor Line (#6D7D77) -->
+          <line x1="20" y1="164" x2="260" y2="164" stroke="#6D7D77" stroke-width="2" stroke-linecap="round" />
+
+          <!-- Chair (#6D7D77) -->
+          <polyline points="38,78 38,120 74,120" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <line x1="42" y1="120" x2="42" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+          <line x1="70" y1="120" x2="70" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+
+          <!-- Table (#6D7D77) -->
+          <line x1="92" y1="98" x2="174" y2="98" stroke="#6D7D77" stroke-width="3.5" stroke-linecap="round" />
+          <line x1="110" y1="98" x2="110" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+          <line x1="160" y1="98" x2="160" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+
+          <!-- Seated Stick Figure Body (#D8E2DE) -->
+          <circle cx="54" cy="40" r="11" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+          <line x1="54" y1="51" x2="54" y2="113" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <!-- Legs bent 90 deg at knee -->
+          <polyline points="54,113 94,113 94,162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Non-injured resting arm -->
+          <polyline points="54,66 66,94 82,110" stroke="#D8E2DE" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+
+          <!-- Injured Forearm Resting Flat on Tabletop (#6DA694) -->
+          <polyline points="54,64 100,92 184,92" stroke="#6DA694" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Vertical Wooden Spoon / Bottle Held Near Top (#D99B6C) -->
+          <rect x="190" y="54" width="7" height="72" rx="3.5" fill="#D99B6C" />
+          <ellipse cx="193.5" cy="128" rx="8" ry="11" fill="#D99B6C" />
+
+          <!-- Hand Choked Up Near Top of Handle (#6DA694) -->
+          <circle cx="190" cy="92" r="8" fill="#6DA694" stroke="#191F1E" stroke-width="2" />
+
+          <!-- Curved Left/Right Pronation-Supination Rotation Arrows (#D99B6C) -->
+          <path d="M162 42 Q194 22 226 42" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" />
+          <polyline points="168,35 161,43 171,44" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+          <polyline points="220,35 227,43 217,44" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+
+          <text x="156" y="58" font-size="8.5" font-weight="700" fill="#9BA8A3" text-anchor="middle">Palm Down</text>
+          <text x="234" y="58" font-size="8.5" font-weight="700" fill="#9BA8A3" text-anchor="middle">Palm Up</text>
+        </svg>
+      `,
+
+      // 4. Diagonal Backwards Pull (with Step)
+      'diagonal-backwards-pull': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagonal Backwards Pull with Step stick figure diagram">
+          <!-- Floor Line (#6D7D77) -->
+          <line x1="36" y1="164" x2="244" y2="164" stroke="#6D7D77" stroke-width="2" stroke-linecap="round" />
+
+          <!-- Standing Stick Figure Body (#D8E2DE) -->
+          <circle cx="132" cy="40" r="12" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+          <line x1="132" y1="52" x2="132" y2="108" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+
+          <!-- Front Planted Leg & Stepping-Back Leg (#D8E2DE) -->
+          <line x1="132" y1="108" x2="110" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <line x1="132" y1="108" x2="174" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+
+          <!-- Non-injured arm (#D8E2DE) -->
+          <polyline points="132,66 116,90 122,108" stroke="#D8E2DE" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+
+          <!-- Backward Step Arrow (#D99B6C) -->
+          <line x1="142" y1="156" x2="166" y2="156" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" />
+          <polyline points="161,151 167,156 161,161" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Ghosted Start Arm Position Across Opposite Hip (#6DA694) -->
+          <line x1="132" y1="64" x2="104" y2="106" stroke="#6DA694" stroke-width="4.5" stroke-linecap="round" opacity="0.4" />
+          <circle cx="102" cy="108" r="4" fill="#6DA694" opacity="0.45" />
+
+          <!-- Active Finish Arm Swept Diagonally Up & Back Overhead (#6DA694) -->
+          <line x1="132" y1="64" x2="168" y2="28" stroke="#6DA694" stroke-width="6" stroke-linecap="round" />
+          <!-- Water Bottle in Overhead Hand (#D99B6C) -->
+          <rect x="165" y="16" width="9" height="16" rx="3.5" transform="rotate(28 165 16)" fill="#D99B6C" />
+
+          <!-- Diagonal Sweep Arrow from Hip to Overhead (#D99B6C) -->
+          <path d="M94 98 Q88 42 152 24" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" />
+          <polyline points="145,20 153,24 148,31" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      `,
+
+      // 5. Table-Supported Bent-Over Row
+      'table-bent-over-row': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Table-Supported Bent-Over Row stick figure diagram">
+          <!-- Floor & Support Table (#6D7D77) -->
+          <line x1="24" y1="164" x2="256" y2="164" stroke="#6D7D77" stroke-width="2" stroke-linecap="round" />
+          <line x1="34" y1="106" x2="102" y2="106" stroke="#6D7D77" stroke-width="3.5" stroke-linecap="round" />
+          <line x1="46" y1="106" x2="46" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+          <line x1="90" y1="106" x2="90" y2="164" stroke="#6D7D77" stroke-width="3" stroke-linecap="round" />
+
+          <!-- Wide Walking / Split Stance Legs (#D8E2DE) -->
+          <line x1="168" y1="104" x2="132" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <line x1="168" y1="104" x2="216" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+
+          <!-- Hinged Forward Torso & Head (#D8E2DE) -->
+          <line x1="168" y1="104" x2="114" y2="72" stroke="#D8E2DE" stroke-width="5" stroke-linecap="round" />
+          <circle cx="96" cy="60" r="11" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+
+          <!-- Support Arm Braced on Table (#D8E2DE) -->
+          <line x1="114" y1="72" x2="82" y2="104" stroke="#D8E2DE" stroke-width="4" stroke-linecap="round" />
+
+          <!-- Ghosted Hanging Start Position of Injured Arm (#6DA694) -->
+          <line x1="126" y1="78" x2="126" y2="128" stroke="#6DA694" stroke-width="4.5" stroke-linecap="round" opacity="0.38" />
+          <rect x="118" y="126" width="16" height="8" rx="3.5" fill="#D99B6C" opacity="0.4" />
+
+          <!-- Active Pulled Row Position Toward Chest/Ribs (#6DA694) -->
+          <polyline points="126,78 154,62 138,92" stroke="#6DA694" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Water Bottle / Weight (#D99B6C) -->
+          <rect x="128" y="88" width="18" height="9" rx="4" fill="#D99B6C" />
+
+          <!-- Upward Pull Arrow (#D99B6C) -->
+          <line x1="168" y1="128" x2="168" y2="86" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" />
+          <polyline points="163,92 168,85 173,92" stroke="#D99B6C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      `,
+
+      // 6. Forearm Plank
+      'gentle-plank': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Forearm Plank stick figure diagram">
+          <!-- Floor Line (#6D7D77) -->
+          <line x1="24" y1="148" x2="256" y2="148" stroke="#6D7D77" stroke-width="2.5" stroke-linecap="round" />
+
+          <!-- Straight-Line Alignment Indicator (#D99B6C) -->
+          <line x1="78" y1="88" x2="236" y2="128" stroke="#D99B6C" stroke-width="1.8" stroke-dasharray="5 4" stroke-linecap="round" />
+
+          <!-- Head (#D8E2DE) -->
+          <circle cx="56" cy="98" r="11" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+
+          <!-- Injured Forearm & Elbow Stacked Under Shoulder (#6DA694) -->
+          <polyline points="84,104 84,144 58,144" stroke="#6DA694" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Straight Plank Body & Legs to Toes (#D8E2DE) -->
+          <polyline points="84,104 156,122 232,144" stroke="#D8E2DE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Optional Knees-Down Subtle Cue -->
+          <line x1="182" y1="130" x2="182" y2="145" stroke="#6D7D77" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 3" />
+          <text x="182" y="164" font-size="9" font-weight="600" fill="#9BA8A3" text-anchor="middle">Optional knees down</text>
+        </svg>
+      `,
+
+      // 7. Radial Nerve Glide
+      'radial-nerve-glide': `
+        <svg viewBox="0 0 280 180" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radial Nerve Glide stick figure diagram">
+          <!-- Floor Line (#6D7D77) -->
+          <line x1="36" y1="164" x2="244" y2="164" stroke="#6D7D77" stroke-width="2" stroke-linecap="round" />
+
+          <!-- Standing Stick Figure Body (#D8E2DE) -->
+          <circle cx="122" cy="40" r="12" stroke="#D8E2DE" stroke-width="3.5" fill="#191F1E" />
+          <line x1="126" y1="52" x2="126" y2="108" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <line x1="126" y1="108" x2="112" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <line x1="126" y1="108" x2="142" y2="162" stroke="#D8E2DE" stroke-width="4.5" stroke-linecap="round" />
+          <!-- Non-injured arm (#D8E2DE) -->
+          <line x1="126" y1="64" x2="102" y2="108" stroke="#D8E2DE" stroke-width="3.5" stroke-linecap="round" opacity="0.65" />
+
+          <!-- Gentle Head-Tilt Arrow (#D99B6C) -->
+          <path d="M98 30 Q88 42 96 54" stroke="#D99B6C" stroke-width="2.2" stroke-linecap="round" />
+          <polyline points="93,29 99,29 98,35" stroke="#D99B6C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          <polyline points="91,50 96,55 100,49" stroke="#D99B6C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Shoulder Depressed Downward Arrow (#D99B6C) -->
+          <line x1="146" y1="44" x2="146" y2="60" stroke="#D99B6C" stroke-width="2.2" stroke-linecap="round" />
+          <polyline points="142,55 146,61 150,55" stroke="#D99B6C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Injured Arm Extended Down & Slightly Back, Wrist Flexed (#6DA694) -->
+          <polyline points="126,64 196,116 184,132" stroke="#6DA694" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+          <!-- Gentle Nerve Glide Motion Arc (#D99B6C) -->
+          <path d="M206 108 Q214 124 200 136" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" />
+          <polyline points="200,130 199,137 206,136" stroke="#D99B6C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      `
+    };
+
+    // =========================================================================
+    // 2. EXERCISE DEFINITIONS (EXACT 7 EXERCISES & DEFAULTS)
+    // =========================================================================
+    const DEFAULT_EXERCISES = [
+      {
+        id: 'iso-push-3-angle',
+        name: '3-Angle Isometric Push',
+        category: 'Isometric Hold',
+        type: 'isometric-3-angle', // Guided through 3 angles per set
+        sets: 2,
+        minSets: 1,
+        maxSets: 5,
+        reps: 1,
+        minReps: 1,
+        maxReps: 1,
+        holdSec: 15, // per angle
+        minHold: 5,
+        maxHold: 45,
+        holdLabel: 'Per Angle (s)',
+        restSec: 30,
+        cues: [
+          'Turn your palm outward and press the back of your injured hand gently into your opposite hand at 50–60% effort without moving.',
+          'Hold each angle smoothly: Position 1 (close to body), Position 2 (mid-range), and Position 3 (near-extended).'
+        ]
+      },
+      {
+        id: 'wrist-ext-eccentric',
+        name: 'Weighted Wrist Extension (Slow Lower)',
+        category: 'Rep + 3s Slow Lower',
+        type: 'reps',
+        hasEccentricLower: true,
+        sets: 3,
+        minSets: 1,
+        maxSets: 6,
+        reps: 10,
+        minReps: 4,
+        maxReps: 20,
+        holdSec: 3, // 3s slow lower
+        minHold: 1,
+        maxHold: 8,
+        holdLabel: 'Slow Lower (s)',
+        restSec: 30,
+        cues: [
+          'Rest your forearm flat on a table with your wrist just past the edge, palm facing down, holding a light weight or water bottle.',
+          'Lift your hand smoothly, then take a full 3 seconds to lower it slowly back down.'
+        ]
+      },
+      {
+        id: 'table-pronation-supination',
+        name: 'Table Pronation & Supination',
+        category: 'Controlled Rotation',
+        type: 'reps',
+        sets: 2,
+        minSets: 1,
+        maxSets: 5,
+        reps: 10,
+        minReps: 4,
+        maxReps: 20,
+        holdSec: 2,
+        minHold: 1,
+        maxHold: 6,
+        holdLabel: 'Pause Pace (s)',
+        restSec: 30,
+        cues: [
+          'Keep your forearm completely flat and supported on a table; choke up near the top of a wooden spoon or half-full bottle.',
+          'Rotate slowly from palm-down to palm-up with zero sharp elbow pain.'
+        ]
+      },
+      {
+        id: 'diagonal-backwards-pull',
+        name: 'Diagonal Backwards Pull (with Step)',
+        category: 'Upper-Arm & Step',
+        type: 'reps',
+        sets: 3,
+        minSets: 1,
+        maxSets: 6,
+        reps: 10,
+        minReps: 4,
+        maxReps: 20,
+        holdSec: 2,
+        minHold: 1,
+        maxHold: 6,
+        holdLabel: 'Top Hold (s)',
+        restSec: 30,
+        cues: [
+          'Start with your injured hand near your opposite hip, holding a light water bottle.',
+          'Step backward while sweeping your arm smoothly diagonally up and back overhead with your palm facing forward.'
+        ]
+      },
+      {
+        id: 'table-bent-over-row',
+        name: 'Table-Supported Bent-Over Row',
+        category: 'Upper-Back Support',
+        type: 'reps',
+        sets: 3,
+        minSets: 1,
+        maxSets: 6,
+        reps: 10,
+        minReps: 4,
+        maxReps: 20,
+        holdSec: 2,
+        minHold: 1,
+        maxHold: 6,
+        holdLabel: 'Squeeze (s)',
+        restSec: 30,
+        cues: [
+          'Stand in a split/walking stance with one hand resting firmly on a table for support and your back flat.',
+          'Pull the weight smoothly toward your chest/ribs without jerking the elbow or flaring your arm out.'
+        ]
+      },
+      {
+        id: 'gentle-plank',
+        name: 'Gentle Plank',
+        category: 'Timed Stability',
+        type: 'timed',
+        sets: 2,
+        minSets: 1,
+        maxSets: 5,
+        reps: 1,
+        minReps: 1,
+        maxReps: 1,
+        holdSec: 25,
+        minHold: 10,
+        maxHold: 90,
+        holdLabel: 'Hold (s)',
+        restSec: 30,
+        cues: [
+          'Stack your elbows directly under your shoulders and brace your core in a straight line.',
+          'Drop to your knees whenever needed so your upper arm feels steady with zero bicep throbbing.'
+        ]
+      },
+      {
+        id: 'radial-nerve-glide',
+        name: 'Radial Nerve Glide',
+        category: 'Gentle Cooldown',
+        type: 'reps',
+        sets: 1,
+        minSets: 1,
+        maxSets: 3,
+        reps: 8,
+        minReps: 4,
+        maxReps: 15,
+        holdSec: 3,
+        minHold: 1,
+        maxHold: 6,
+        holdLabel: 'Glide Pace (s)',
+        restSec: 15,
+        cues: [
+          'Gently drop your shoulder down, straighten your elbow, and bend your wrist and fingers downward.',
+          'Tilt your head slowly side-to-side in a smooth flossing motion without forcing any stretch.'
+        ]
+      }
+    ];
+
+    const ANGLE_LABELS = [
+      'Angle 1: Close to Body',
+      'Angle 2: Mid-Range',
+      'Angle 3: Near-Extended'
+    ];
+
+    const STORAGE_PLAN_KEY = 'tkd_rehab_sage_plan_v1';
+    const STORAGE_SOUND_KEY = 'tkd_rehab_sage_sound_v1';
+
+    // =========================================================================
+    // 3. STATE MANAGEMENT
+    // =========================================================================
+    let exercises = loadPlan();
+    let soundEnabled = localStorage.getItem(STORAGE_SOUND_KEY) !== 'false';
+    let expandedCardIndex = null;
+    let resetTapPending = false;
+    let resetTapTimeout = null;
+
+    const RING_CIRCUMFERENCE = 2 * Math.PI * 94; // ~590.62
+
+    let focusState = {
+      index: 0,
+      setNum: 1,
+      angleIdx: 0, // 0, 1, 2 for Exercise 1
+      repNum: 0,
+      repMode: 'manual', // 'manual' | 'auto'
+      autoSubPhase: 'lift', // 'lift' | 'lower' (used for Exercise 2 slow lower)
+      status: 'READY', // 'READY' | 'ACTIVE' | 'REST' | 'DONE'
+      isPaused: false,
+      duration: 15,
+      remaining: 15,
+      lastFrameTime: 0,
+      lastSecondSpoken: null,
+      rafId: null
+    };
+
+    function loadPlan() {
+      try {
+        const raw = localStorage.getItem(STORAGE_PLAN_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length === DEFAULT_EXERCISES.length) {
+            return DEFAULT_EXERCISES.map((def, i) => ({
+              ...def,
+              sets: parsed[i].sets ?? def.sets,
+              reps: parsed[i].reps ?? def.reps,
+              holdSec: parsed[i].holdSec ?? def.holdSec,
+              restSec: parsed[i].restSec ?? def.restSec
+            }));
+          }
+        }
+      } catch (e) {
+        // Fallback to defaults
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
+    }
+
+    function savePlan() {
+      try {
+        localStorage.setItem(STORAGE_PLAN_KEY, JSON.stringify(exercises));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    // =========================================================================
+    // 4. SOFT WEB AUDIO API CHIMES
+    // =========================================================================
+    let audioCtx = null;
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) audioCtx = new Ctx();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSoftTone(freq, duration = 0.16, volume = 0.14, delay = 0) {
+      if (!soundEnabled) return;
+      try {
+        ensureAudio();
+        if (!audioCtx) return;
+        const start = audioCtx.currentTime + delay;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(volume, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + duration + 0.02);
+      } catch (e) {
+        // Ignore audio restrictions
+      }
+    }
+
+    function playChime(kind) {
+      if (!soundEnabled) return;
+      if (kind === 'start') {
+        playSoftTone(528, 0.16, 0.15, 0);
+        playSoftTone(660, 0.22, 0.15, 0.09);
+      } else if (kind === 'angle_shift') {
+        playSoftTone(587.33, 0.15, 0.14, 0);
+        playSoftTone(784, 0.22, 0.15, 0.08);
+      } else if (kind === 'rep') {
+        playSoftTone(620, 0.12, 0.12, 0);
+      } else if (kind === 'lower_cue') {
+        playSoftTone(494, 0.14, 0.12, 0);
+      } else if (kind === 'rest') {
+        playSoftTone(528, 0.16, 0.13, 0);
+        playSoftTone(396, 0.26, 0.13, 0.1);
+      } else if (kind === 'done') {
+        playSoftTone(528, 0.16, 0.15, 0);
+        playSoftTone(660, 0.16, 0.15, 0.11);
+        playSoftTone(792, 0.32, 0.16, 0.22);
+      }
+    }
+
+    function syncSoundIcons() {
+      document.querySelectorAll('.sound-icon-on').forEach((el) => {
+        el.classList.toggle('hidden', !soundEnabled);
+      });
+      document.querySelectorAll('.sound-icon-off').forEach((el) => {
+        el.classList.toggle('hidden', soundEnabled);
+      });
+    }
+
+    // =========================================================================
+    // 5. PRESCRIPTION SUMMARY & OVERVIEW RENDERING
+    // =========================================================================
+    function formatPrescription(ex) {
+      if (ex.type === 'isometric-3-angle') {
+        return `${ex.sets} round${ex.sets > 1 ? 's' : ''} &times; ${ex.holdSec}s per angle`;
+      }
+      if (ex.type === 'timed') {
+        return `${ex.sets} set${ex.sets > 1 ? 's' : ''} &times; ${ex.holdSec}s hold`;
+      }
+      if (ex.hasEccentricLower) {
+        return `${ex.sets} set${ex.sets > 1 ? 's' : ''} &times; ${ex.reps} reps &bull; ${ex.holdSec}s slow lower`;
+      }
+      if (ex.id === 'radial-nerve-glide') {
+        return `${ex.sets} set &times; ${ex.reps} slow glides`;
+      }
+      return `${ex.sets} set${ex.sets > 1 ? 's' : ''} &times; ${ex.reps} reps`;
+    }
+
+    function estimateTotalMins() {
+      let seconds = 0;
+      exercises.forEach((ex) => {
+        if (ex.type === 'isometric-3-angle') {
+          seconds += ex.sets * (3 * ex.holdSec) + Math.max(0, ex.sets - 1) * ex.restSec + 15;
+        } else if (ex.type === 'timed') {
+          seconds += ex.sets * ex.holdSec + Math.max(0, ex.sets - 1) * ex.restSec + 15;
+        } else {
+          const secPerRep = ex.hasEccentricLower ? ex.holdSec + 1.5 : ex.holdSec + 1;
+          seconds += ex.sets * (ex.reps * secPerRep) + Math.max(0, ex.sets - 1) * ex.restSec + 15;
+        }
+      });
+      return Math.max(1, Math.round(seconds / 60));
+    }
+
+    function renderOverview() {
+      const badge = document.getElementById('overview-summary-badge');
+      badge.innerHTML = `7 Exercises &bull; Custom Rhythm (~${estimateTotalMins()}m)`;
+
+      const list = document.getElementById('overview-card-list');
+      list.innerHTML = '';
+
+      exercises.forEach((ex, idx) => {
+        const isExpanded = expandedCardIndex === idx;
+        const card = document.createElement('div');
+        card.className = 'bg-[#191F1E] border border-[#2E3835] rounded-2xl p-3.5 transition-all';
+
+        // Build collapsible Adjuster Drawer
+        const repStepperHtml =
+          ex.type === 'reps'
+            ? `
+            <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+              <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">Reps</span>
+              <div class="flex items-center justify-between">
+                <button type="button" data-ov-action="dec-reps" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+                <span class="text-sm font-extrabold text-[#E6ECE9] tabular-nums">${ex.reps}</span>
+                <button type="button" data-ov-action="inc-reps" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+              </div>
+            </div>`
+            : `
+            <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5 flex flex-col justify-between">
+              <span class="block text-[11px] font-semibold text-[#9BA8A3]">Format</span>
+              <span class="text-xs font-bold text-[#6DA694] py-1.5">${ex.type === 'isometric-3-angle' ? '3 Angles / Round' : 'Continuous Hold'}</span>
+            </div>`;
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <!-- Left SVG Illustration Thumbnail -->
+            <button type="button" data-ov-action="open-direct" data-idx="${idx}" class="w-20 h-16 rounded-xl bg-[#141A19] border border-[#2E3835] p-1 shrink-0 flex items-center justify-center overflow-hidden hover:border-[#6DA694]/50 transition">
+              ${EXERCISE_SVGS[ex.id]}
+            </button>
+
+            <!-- Center Title & Prescription -->
+            <div class="flex-1 min-w-0 cursor-pointer" data-ov-action="open-direct" data-idx="${idx}">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#6DA694]/15 text-[#6DA694] text-[11px] font-extrabold">
+                  ${idx + 1}
+                </span>
+                <span class="text-[11px] font-semibold text-[#9BA8A3] truncate">${ex.category}</span>
+              </div>
+              <h2 class="text-sm sm:text-base font-bold text-[#E6ECE9] leading-snug truncate">
+                ${ex.name}
+              </h2>
+              <p class="text-xs font-semibold text-[#6DA694] mt-0.5">
+                ${formatPrescription(ex)}
+              </p>
+            </div>
+
+            <!-- Right Collapsible Adjust Toggle -->
+            <button type="button" data-ov-action="toggle-adjust" data-idx="${idx}" class="px-2.5 py-2 rounded-xl border text-xs font-bold shrink-0 transition active:scale-95 ${
+              isExpanded
+                ? 'bg-[#6DA694] text-[#0E1412] border-[#6DA694]'
+                : 'bg-[#222A28] hover:bg-[#2E3835] text-[#9BA8A3] border-[#2E3835]'
+            }">
+              Adjust
+            </button>
+          </div>
+
+          <!-- Collapsible Steppers Drawer -->
+          <div class="${isExpanded ? 'block' : 'hidden'} mt-3 pt-3 border-t border-[#2E3835] grid grid-cols-2 gap-2">
+            <!-- Sets / Rounds -->
+            <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+              <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">${ex.type === 'isometric-3-angle' ? 'Rounds' : 'Sets'}</span>
+              <div class="flex items-center justify-between">
+                <button type="button" data-ov-action="dec-sets" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+                <span class="text-sm font-extrabold text-[#E6ECE9] tabular-nums">${ex.sets}</span>
+                <button type="button" data-ov-action="inc-sets" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Reps or Format -->
+            ${repStepperHtml}
+
+            <!-- Hold / Tempo Seconds -->
+            <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+              <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">${ex.holdLabel}</span>
+              <div class="flex items-center justify-between">
+                <button type="button" data-ov-action="dec-hold" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+                <span class="text-sm font-extrabold text-[#6DA694] tabular-nums">${ex.holdSec}s</span>
+                <button type="button" data-ov-action="inc-hold" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Rest Seconds -->
+            <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+              <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">Rest (s)</span>
+              <div class="flex items-center justify-between">
+                <button type="button" data-ov-action="dec-rest" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+                <span class="text-sm font-extrabold text-[#D99B6C] tabular-nums">${ex.restSec}s</span>
+                <button type="button" data-ov-action="inc-rest" data-idx="${idx}" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+              </div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // Overview card click delegation
+    document.getElementById('overview-card-list').addEventListener('click', (e) => {
+      const target = e.target.closest('[data-ov-action]');
+      if (!target) return;
+      const action = target.dataset.ovAction;
+      const idx = parseInt(target.dataset.idx, 10);
+      const ex = exercises[idx];
+      if (!ex) return;
+
+      const holdStep = ex.type === 'reps' ? 1 : 5;
+
+      if (action === 'toggle-adjust') {
+        expandedCardIndex = expandedCardIndex === idx ? null : idx;
+        renderOverview();
+        return;
+      }
+      if (action === 'open-direct') {
+        openExercisePage(idx);
+        return;
+      }
+      if (action === 'dec-sets') ex.sets = Math.max(ex.minSets, ex.sets - 1);
+      if (action === 'inc-sets') ex.sets = Math.min(ex.maxSets, ex.sets + 1);
+      if (action === 'dec-reps') ex.reps = Math.max(ex.minReps, ex.reps - 1);
+      if (action === 'inc-reps') ex.reps = Math.min(ex.maxReps, ex.reps + 1);
+      if (action === 'dec-hold') ex.holdSec = Math.max(ex.minHold, ex.holdSec - holdStep);
+      if (action === 'inc-hold') ex.holdSec = Math.min(ex.maxHold, ex.holdSec + holdStep);
+      if (action === 'dec-rest') ex.restSec = Math.max(0, ex.restSec - 5);
+      if (action === 'inc-rest') ex.restSec = Math.min(120, ex.restSec + 5);
+
+      savePlan();
+      renderOverview();
+    });
+
+    // Safe two-tap Reset Defaults
+    document.getElementById('btn-reset-defaults').addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      if (!resetTapPending) {
+        resetTapPending = true;
+        btn.textContent = 'Confirm Reset';
+        btn.classList.add('bg-[#D99B6C]/15', 'text-[#D99B6C]', 'border-[#D99B6C]/40');
+        resetTapTimeout = setTimeout(() => {
+          resetTapPending = false;
+          btn.textContent = 'Reset Defaults';
+          btn.classList.remove('bg-[#D99B6C]/15', 'text-[#D99B6C]', 'border-[#D99B6C]/40');
+        }, 3000);
+      } else {
+        clearTimeout(resetTapTimeout);
+        resetTapPending = false;
+        btn.textContent = 'Reset Defaults';
+        btn.classList.remove('bg-[#D99B6C]/15', 'text-[#D99B6C]', 'border-[#D99B6C]/40');
+        exercises = JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
+        expandedCardIndex = null;
+        savePlan();
+        renderOverview();
+      }
+    });
+
+    // =========================================================================
+    // 6. VIEW SWITCHING & PAGE-BY-PAGE FOCUS ENGINE
+    // =========================================================================
+    function switchScreen(screenId) {
+      ['view-overview', 'view-exercise', 'view-complete'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (id === screenId) {
+          el.classList.remove('hidden');
+          el.classList.add('flex');
+        } else {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function stopLoop() {
+      if (focusState.rafId) {
+        cancelAnimationFrame(focusState.rafId);
+        focusState.rafId = null;
+      }
+    }
+
+    function openExercisePage(idx) {
+      stopLoop();
+      const ex = exercises[idx];
+      if (!ex) return;
+
+      focusState.index = idx;
+      focusState.setNum = 1;
+      focusState.angleIdx = 0;
+      focusState.repNum = 0;
+      focusState.autoSubPhase = 'lift';
+      focusState.status = 'READY';
+      focusState.isPaused = false;
+      focusState.duration = ex.holdSec;
+      focusState.remaining = ex.holdSec;
+
+      renderFocusPageStatic();
+      updateFocusDynamicUI();
+      switchScreen('view-exercise');
+    }
+
+    function renderFocusPageStatic() {
+      const idx = focusState.index;
+      const ex = exercises[idx];
+
+      // Top bar counter & progress
+      document.getElementById('focus-counter').textContent = `Exercise ${idx + 1} of ${exercises.length}`;
+      const pct = ((idx + 1) / exercises.length) * 100;
+      document.getElementById('focus-progress-bar').style.width = `${pct}%`;
+
+      // SVG Illustration
+      document.getElementById('focus-svg-container').innerHTML = EXERCISE_SVGS[ex.id];
+
+      // Title & Category
+      document.getElementById('focus-category-pill').textContent = ex.category;
+      document.getElementById('focus-title').textContent = ex.name;
+
+      // Form Cues
+      const cuesList = document.getElementById('focus-cues-list');
+      cuesList.innerHTML = ex.cues
+        .map(
+          (cue) => `
+          <li class="flex items-start gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#6DA694] mt-2 shrink-0"></span>
+            <span>${cue}</span>
+          </li>`
+        )
+        .join('');
+
+      // Quick Inline Adjusters on Focus Page
+      const adjustContainer = document.getElementById('focus-inline-adjusters');
+      if (ex.type === 'reps') {
+        adjustContainer.innerHTML = `
+          <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+            <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">Reps / Set</span>
+            <div class="flex items-center justify-between">
+              <button type="button" data-inline-adj="dec-reps" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+              <span id="inline-val-reps" class="text-sm font-extrabold text-[#E6ECE9] tabular-nums">${ex.reps}</span>
+              <button type="button" data-inline-adj="inc-reps" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+            </div>
+          </div>
+          <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+            <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">${ex.holdLabel}</span>
+            <div class="flex items-center justify-between">
+              <button type="button" data-inline-adj="dec-hold" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+              <span id="inline-val-hold" class="text-sm font-extrabold text-[#6DA694] tabular-nums">${ex.holdSec}s</span>
+              <button type="button" data-inline-adj="inc-hold" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+            </div>
+          </div>
+        `;
+      } else {
+        adjustContainer.innerHTML = `
+          <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+            <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">${ex.holdLabel}</span>
+            <div class="flex items-center justify-between">
+              <button type="button" data-inline-adj="dec-hold" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+              <span id="inline-val-hold" class="text-sm font-extrabold text-[#6DA694] tabular-nums">${ex.holdSec}s</span>
+              <button type="button" data-inline-adj="inc-hold" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+            </div>
+          </div>
+          <div class="bg-[#222A28] border border-[#2E3835] rounded-xl p-2.5">
+            <span class="block text-[11px] font-semibold text-[#9BA8A3] mb-1">Rest (s)</span>
+            <div class="flex items-center justify-between">
+              <button type="button" data-inline-adj="dec-rest" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">&minus;</button>
+              <span id="inline-val-rest" class="text-sm font-extrabold text-[#D99B6C] tabular-nums">${ex.restSec}s</span>
+              <button type="button" data-inline-adj="inc-rest" class="w-8 h-8 rounded-lg bg-[#191F1E] hover:bg-[#2E3835] border border-[#2E3835] text-[#E6ECE9] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Update primary Start Hold / Begin label
+      document.getElementById('label-begin-btn').textContent =
+        ex.type === 'reps' ? 'Start Set' : 'Start Hold';
+
+      // Show/hide 3-Angle Pills & Rep Mode Switcher
+      document.getElementById('angle-pills-bar').classList.toggle('hidden', ex.type !== 'isometric-3-angle');
+      document.getElementById('rep-pacer-mode-bar').classList.toggle('hidden', ex.type !== 'reps');
+
+      // Bottom Previous / Next Navigation Buttons
+      const btnPrev = document.getElementById('btn-prev-page');
+      btnPrev.disabled = idx === 0;
+
+      const labelNext = document.getElementById('label-next-page');
+      const arrowNext = document.getElementById('arrow-next-page');
+      if (idx === exercises.length - 1) {
+        labelNext.textContent = 'Finish Routine';
+        arrowNext.innerHTML = '&#10003;';
+      } else {
+        labelNext.textContent = 'Next Exercise';
+        arrowNext.innerHTML = '&rarr;';
+      }
+    }
+
+    // Quick Inline Adjuster delegation on Focus Page
+    document.getElementById('focus-inline-adjusters').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-inline-adj]');
+      if (!btn) return;
+      const ex = exercises[focusState.index];
+      const act = btn.dataset.inlineAdj;
+      const holdStep = ex.type === 'reps' ? 1 : 5;
+
+      if (act === 'dec-reps') ex.reps = Math.max(ex.minReps, ex.reps - 1);
+      if (act === 'inc-reps') ex.reps = Math.min(ex.maxReps, ex.reps + 1);
+      if (act === 'dec-hold') ex.holdSec = Math.max(ex.minHold, ex.holdSec - holdStep);
+      if (act === 'inc-hold') ex.holdSec = Math.min(ex.maxHold, ex.holdSec + holdStep);
+      if (act === 'dec-rest') ex.restSec = Math.max(0, ex.restSec - 5);
+      if (act === 'inc-rest') ex.restSec = Math.min(120, ex.restSec + 5);
+
+      savePlan();
+      renderFocusPageStatic();
+
+      if (focusState.status === 'READY') {
+        focusState.duration = ex.holdSec;
+        focusState.remaining = ex.holdSec;
+      }
+      updateFocusDynamicUI();
+    });
+
+    // =========================================================================
+    // 7. TIMER & REP PACER LOGIC
+    // =========================================================================
+    function beginExercise() {
+      const ex = exercises[focusState.index];
+      ensureAudio();
+      focusState.status = 'ACTIVE';
+      focusState.isPaused = false;
+      focusState.angleIdx = 0;
+      focusState.repNum = 1;
+      focusState.autoSubPhase = 'lift';
+
+      if (ex.type === 'isometric-3-angle' || ex.type === 'timed') {
+        focusState.duration = ex.holdSec;
+        focusState.remaining = ex.holdSec;
+        playChime('start');
+        startTimerLoop();
+      } else if (ex.type === 'reps') {
+        if (focusState.repMode === 'manual') {
+          focusState.repNum = 0;
+          playChime('start');
+          updateFocusDynamicUI();
+        } else {
+          // Auto Rep-Pacer
+          setupAutoRepStep(ex);
+          playChime('start');
+          startTimerLoop();
+        }
+      }
+
+      updateFocusDynamicUI();
+    }
+
+    function setupAutoRepStep(ex) {
+      if (ex.hasEccentricLower) {
+        // Lift (1.5s) then Slow Lower (ex.holdSec)
+        focusState.autoSubPhase = 'lift';
+        focusState.duration = 1.5;
+        focusState.remaining = 1.5;
+      } else {
+        focusState.autoSubPhase = 'hold';
+        focusState.duration = ex.holdSec;
+        focusState.remaining = ex.holdSec;
+      }
+    }
+
+    function enterRestPhase(ex) {
+      if (ex.restSec <= 0) {
+        advanceToNextSetOrFinish(ex);
+        return;
+      }
+      focusState.status = 'REST';
+      focusState.isPaused = false;
+      focusState.duration = ex.restSec;
+      focusState.remaining = ex.restSec;
+      playChime('rest');
+      startTimerLoop();
+      updateFocusDynamicUI();
+    }
+
+    function advanceToNextSetOrFinish(ex) {
+      if (focusState.setNum < ex.sets) {
+        focusState.setNum += 1;
+        focusState.angleIdx = 0;
+        focusState.repNum = 0;
+        focusState.status = 'ACTIVE';
+        focusState.isPaused = false;
+
+        if (ex.type === 'isometric-3-angle' || ex.type === 'timed') {
+          focusState.duration = ex.holdSec;
+          focusState.remaining = ex.holdSec;
+          playChime('start');
+          startTimerLoop();
+        } else if (focusState.repMode === 'manual') {
+          stopLoop();
+          playChime('start');
+        } else {
+          focusState.repNum = 1;
+          setupAutoRepStep(ex);
+          playChime('start');
+          startTimerLoop();
+        }
+      } else {
+        // All sets of this exercise complete
+        stopLoop();
+        focusState.status = 'DONE';
+        focusState.isPaused = false;
+        playChime('done');
+      }
+      updateFocusDynamicUI();
+    }
+
+    function startTimerLoop() {
+      stopLoop();
+      focusState.lastFrameTime = performance.now();
+
+      function frame(now) {
+        const dt = (now - focusState.lastFrameTime) / 1000;
+        focusState.lastFrameTime = now;
+
+        if (!focusState.isPaused && (focusState.status === 'ACTIVE' || focusState.status === 'REST')) {
+          const ex = exercises[focusState.index];
+          focusState.remaining -= dt;
+
+          if (focusState.remaining <= 0) {
+            if (focusState.status === 'REST') {
+              advanceToNextSetOrFinish(ex);
+            } else if (focusState.status === 'ACTIVE') {
+              if (ex.type === 'isometric-3-angle') {
+                if (focusState.angleIdx < 2) {
+                  focusState.angleIdx += 1;
+                  focusState.duration = ex.holdSec;
+                  focusState.remaining = ex.holdSec;
+                  playChime('angle_shift');
+                } else {
+                  enterRestPhase(ex);
+                }
+              } else if (ex.type === 'timed') {
+                enterRestPhase(ex);
+              } else if (ex.type === 'reps' && focusState.repMode === 'auto') {
+                if (ex.hasEccentricLower && focusState.autoSubPhase === 'lift') {
+                  // Transition to Slow Lower phase
+                  focusState.autoSubPhase = 'lower';
+                  focusState.duration = ex.holdSec;
+                  focusState.remaining = ex.holdSec;
+                  playChime('lower_cue');
+                } else {
+                  // Completed one rep
+                  if (focusState.repNum < ex.reps) {
+                    focusState.repNum += 1;
+                    setupAutoRepStep(ex);
+                    playChime('rep');
+                  } else {
+                    enterRestPhase(ex);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        updateFocusDynamicUI();
+        if (focusState.status === 'ACTIVE' || focusState.status === 'REST') {
+          focusState.rafId = requestAnimationFrame(frame);
+        }
+      }
+
+      focusState.rafId = requestAnimationFrame(frame);
+    }
+
+    function updateFocusDynamicUI() {
+      const ex = exercises[focusState.index];
+      const setLabel = ex.type === 'isometric-3-angle' ? 'Round' : 'Set';
+      document.getElementById('pacer-set-indicator').textContent = `${setLabel} ${focusState.setNum} of ${ex.sets}`;
+
+      // Update 3-Angle Pills if Exercise 1
+      if (ex.type === 'isometric-3-angle') {
+        [0, 1, 2].forEach((i) => {
+          const pill = document.getElementById(`angle-pill-${i}`);
+          if (i === focusState.angleIdx && focusState.status !== 'DONE') {
+            pill.className = 'py-1.5 px-2 rounded-xl text-center text-[11px] font-extrabold transition bg-[#6DA694] text-[#0E1412]';
+          } else if (i < focusState.angleIdx || focusState.status === 'DONE') {
+            pill.className = 'py-1.5 px-2 rounded-xl text-center text-[11px] font-bold transition bg-[#6DA694]/20 text-[#6DA694]';
+          } else {
+            pill.className = 'py-1.5 px-2 rounded-xl text-center text-[11px] font-bold transition text-[#9BA8A3]';
+          }
+        });
+      }
+
+      // Update Rep Mode Switcher Pills
+      if (ex.type === 'reps') {
+        const btnManual = document.getElementById('btn-mode-manual');
+        const btnAuto = document.getElementById('btn-mode-auto');
+        if (focusState.repMode === 'manual') {
+          btnManual.className = 'py-2 px-3 rounded-xl text-xs font-extrabold transition bg-[#6DA694] text-[#0E1412]';
+          btnAuto.className = 'py-2 px-3 rounded-xl text-xs font-bold transition text-[#9BA8A3] hover:text-[#E6ECE9]';
+        } else {
+          btnAuto.className = 'py-2 px-3 rounded-xl text-xs font-extrabold transition bg-[#6DA694] text-[#0E1412]';
+          btnManual.className = 'py-2 px-3 rounded-xl text-xs font-bold transition text-[#9BA8A3] hover:text-[#E6ECE9]';
+        }
+      }
+
+      // Ring Visuals & Labels
+      const ring = document.getElementById('focus-ring-circle');
+      const topLabel = document.getElementById('ring-top-label');
+      const centerVal = document.getElementById('ring-center-value');
+      const bottomLabel = document.getElementById('ring-bottom-label');
+      const statusBadge = document.getElementById('pacer-status-badge');
+
+      let fraction = 1;
+
+      if (focusState.status === 'READY') {
+        ring.style.stroke = '#6DA694';
+        statusBadge.textContent = 'Ready when you are';
+        if (ex.type === 'isometric-3-angle') {
+          topLabel.textContent = ANGLE_LABELS[0];
+          centerVal.textContent = `${ex.holdSec}s`;
+          bottomLabel.textContent = 'Tap Start Hold to begin';
+        } else if (ex.type === 'timed') {
+          topLabel.textContent = 'HOLD DURATION';
+          centerVal.textContent = `${ex.holdSec}s`;
+          bottomLabel.textContent = 'Tap Start Hold when positioned';
+        } else {
+          topLabel.textContent = focusState.repMode === 'manual' ? 'MY OWN RHYTHM' : 'AUTO REP-PACER';
+          centerVal.textContent = `0 / ${ex.reps}`;
+          bottomLabel.textContent = ex.hasEccentricLower ? `${ex.holdSec}s slow lower per rep` : `${ex.reps} reps per set`;
+        }
+        fraction = 1;
+      } else if (focusState.status === 'ACTIVE') {
+        ring.style.stroke = '#6DA694';
+        statusBadge.textContent = focusState.isPaused ? 'Paused' : 'In progress';
+
+        if (ex.type === 'isometric-3-angle') {
+          const sec = Math.max(0, Math.ceil(focusState.remaining));
+          topLabel.textContent = ANGLE_LABELS[focusState.angleIdx];
+          centerVal.textContent = `${sec}s`;
+          bottomLabel.textContent = focusState.angleIdx < 2 ? 'Next angle follows automatically' : 'Final angle of round';
+          fraction = Math.max(0, focusState.remaining / focusState.duration);
+        } else if (ex.type === 'timed') {
+          const sec = Math.max(0, Math.ceil(focusState.remaining));
+          topLabel.textContent = 'HOLD STEADY';
+          centerVal.textContent = `${sec}s`;
+          bottomLabel.textContent = 'Breathe calmly';
+          fraction = Math.max(0, focusState.remaining / focusState.duration);
+        } else if (focusState.repMode === 'manual') {
+          topLabel.textContent = 'YOUR RHYTHM';
+          centerVal.textContent = `${focusState.repNum} / ${ex.reps}`;
+          bottomLabel.textContent = ex.hasEccentricLower ? `Lower slowly for ${ex.holdSec}s each rep` : 'Tap below after each rep';
+          fraction = Math.min(1, focusState.repNum / ex.reps);
+        } else {
+          // Auto Rep-Pacer
+          const sec = Math.max(0, Math.ceil(focusState.remaining));
+          topLabel.textContent = `REP ${focusState.repNum} OF ${ex.reps}`;
+          if (ex.hasEccentricLower) {
+            centerVal.textContent = focusState.autoSubPhase === 'lift' ? 'LIFT' : `${sec}s`;
+            bottomLabel.textContent = focusState.autoSubPhase === 'lift' ? 'Smooth upward lift' : 'Slow 3s lowering';
+          } else {
+            centerVal.textContent = `${sec}s`;
+            bottomLabel.textContent = 'Smooth controlled movement';
+          }
+          fraction = Math.max(0, focusState.remaining / focusState.duration);
+        }
+      } else if (focusState.status === 'REST') {
+        ring.style.stroke = '#D99B6C';
+        statusBadge.textContent = focusState.isPaused ? 'Rest paused' : 'Resting';
+        const sec = Math.max(0, Math.ceil(focusState.remaining));
+        topLabel.textContent = 'GENTLE REST';
+        centerVal.textContent = `${sec}s`;
+        bottomLabel.textContent = `Up next: ${setLabel} ${focusState.setNum + 1} of ${ex.sets}`;
+        fraction = Math.max(0, focusState.remaining / focusState.duration);
+      } else if (focusState.status === 'DONE') {
+        ring.style.stroke = '#6DA694';
+        statusBadge.textContent = 'Completed';
+        topLabel.textContent = 'EXERCISE COMPLETE';
+        centerVal.innerHTML = '&#10003;';
+        bottomLabel.textContent = `${ex.sets} ${setLabel.toLowerCase()}${ex.sets > 1 ? 's' : ''} finished`;
+        fraction = 1;
+      }
+
+      ring.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - fraction);
+
+      // Toggle Control Sub-Panels
+      const ctrlReady = document.getElementById('ctrl-ready');
+      const ctrlRunning = document.getElementById('ctrl-running');
+      const ctrlManual = document.getElementById('ctrl-manual');
+      const ctrlRest = document.getElementById('ctrl-rest');
+      const ctrlDone = document.getElementById('ctrl-done');
+
+      [ctrlReady, ctrlRunning, ctrlManual, ctrlRest, ctrlDone].forEach((c) => c.classList.add('hidden'));
+
+      if (focusState.status === 'READY') {
+        ctrlReady.classList.remove('hidden');
+      } else if (focusState.status === 'ACTIVE') {
+        if (ex.type === 'reps' && focusState.repMode === 'manual') {
+          ctrlManual.classList.remove('hidden');
+        } else {
+          ctrlRunning.classList.remove('hidden');
+          document.getElementById('btn-pause-resume').textContent = focusState.isPaused ? 'Resume' : 'Pause';
+        }
+      } else if (focusState.status === 'REST') {
+        ctrlRest.classList.remove('hidden');
+        document.getElementById('btn-rest-pause').textContent = focusState.isPaused ? 'Resume Rest' : 'Pause Rest';
+      } else if (focusState.status === 'DONE') {
+        ctrlDone.classList.remove('hidden');
+      }
+    }
+
+    // =========================================================================
+    // 8. EVENT LISTENERS FOR NAVIGATION & PACER CONTROLS
+    // =========================================================================
+    document.getElementById('btn-start-routine').addEventListener('click', () => {
+      openExercisePage(0);
+    });
+
+    document.getElementById('btn-back-overview').addEventListener('click', () => {
+      stopLoop();
+      renderOverview();
+      switchScreen('view-overview');
+    });
+
+    document.getElementById('btn-begin-exercise').addEventListener('click', beginExercise);
+
+    document.getElementById('btn-pause-resume').addEventListener('click', () => {
+      focusState.isPaused = !focusState.isPaused;
+      focusState.lastFrameTime = performance.now();
+      updateFocusDynamicUI();
+    });
+
+    document.getElementById('btn-reset-timer').addEventListener('click', () => {
+      stopLoop();
+      openExercisePage(focusState.index);
+    });
+
+    document.getElementById('btn-skip-step').addEventListener('click', () => {
+      const ex = exercises[focusState.index];
+      ensureAudio();
+      if (ex.type === 'isometric-3-angle' && focusState.angleIdx < 2) {
+        focusState.angleIdx += 1;
+        focusState.duration = ex.holdSec;
+        focusState.remaining = ex.holdSec;
+        playChime('angle_shift');
+        updateFocusDynamicUI();
+      } else {
+        enterRestPhase(ex);
+      }
+    });
+
+    // Rep Mode Switcher (Manual vs Auto Rep-Pacer)
+    document.getElementById('btn-mode-manual').addEventListener('click', () => {
+      if (focusState.repMode === 'manual') return;
+      focusState.repMode = 'manual';
+      stopLoop();
+      if (focusState.status === 'ACTIVE') {
+        focusState.repNum = Math.max(0, focusState.repNum - 1);
+      }
+      updateFocusDynamicUI();
+    });
+
+    document.getElementById('btn-mode-auto').addEventListener('click', () => {
+      if (focusState.repMode === 'auto') return;
+      focusState.repMode = 'auto';
+      const ex = exercises[focusState.index];
+      if (focusState.status === 'ACTIVE') {
+        focusState.repNum = Math.min(ex.reps, focusState.repNum + 1);
+        setupAutoRepStep(ex);
+        startTimerLoop();
+      }
+      updateFocusDynamicUI();
+    });
+
+    // Manual Rhythm Rep Controls
+    document.getElementById('btn-tap-rep').addEventListener('click', () => {
+      const ex = exercises[focusState.index];
+      ensureAudio();
+      if (focusState.repNum + 1 < ex.reps) {
+        focusState.repNum += 1;
+        playChime('rep');
+        updateFocusDynamicUI();
+      } else {
+        focusState.repNum = ex.reps;
+        enterRestPhase(ex);
+      }
+    });
+
+    document.getElementById('btn-manual-reset').addEventListener('click', () => {
+      focusState.repNum = 0;
+      updateFocusDynamicUI();
+    });
+
+    document.getElementById('btn-manual-complete-set').addEventListener('click', () => {
+      const ex = exercises[focusState.index];
+      ensureAudio();
+      enterRestPhase(ex);
+    });
+
+    // Rest Phase Controls
+    document.getElementById('btn-rest-pause').addEventListener('click', () => {
+      focusState.isPaused = !focusState.isPaused;
+      focusState.lastFrameTime = performance.now();
+      updateFocusDynamicUI();
+    });
+
+    document.getElementById('btn-skip-rest').addEventListener('click', () => {
+      const ex = exercises[focusState.index];
+      ensureAudio();
+      advanceToNextSetOrFinish(ex);
+    });
+
+    // Repeat Exercise Button on Done State
+    document.getElementById('btn-repeat-exercise').addEventListener('click', () => {
+      openExercisePage(focusState.index);
+    });
+
+    // Bottom Page-by-Page Previous & Next Buttons
+    document.getElementById('btn-prev-page').addEventListener('click', () => {
+      if (focusState.index > 0) {
+        openExercisePage(focusState.index - 1);
+      }
+    });
+
+    document.getElementById('btn-next-page').addEventListener('click', () => {
+      if (focusState.index < exercises.length - 1) {
+        openExercisePage(focusState.index + 1);
+      } else {
+        stopLoop();
+        playChime('done');
+        switchScreen('view-complete');
+      }
+    });
+
+    // View 3 Completion Buttons
+    document.getElementById('btn-complete-overview').addEventListener('click', () => {
+      renderOverview();
+      switchScreen('view-overview');
+    });
+
+    document.getElementById('btn-complete-restart').addEventListener('click', () => {
+      openExercisePage(0);
+    });
+
+    // Sound Chime Toggles (Overview & Focus headers)
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem(STORAGE_SOUND_KEY, soundEnabled ? 'true' : 'false');
+      syncSoundIcons();
+      if (soundEnabled) {
+        ensureAudio();
+        playChime('rep');
+      }
+    }
+
+    document.getElementById('btn-sound-overview').addEventListener('click', toggleSound);
+    document.getElementById('btn-sound-focus').addEventListener('click', toggleSound);
+
+    // =========================================================================
+    // 9. INITIALIZE APPLICATION
+    // =========================================================================
+    syncSoundIcons();
+    renderOverview();
+  </script>
+</body>
+</html>
